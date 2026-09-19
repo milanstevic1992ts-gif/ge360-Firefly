@@ -28,7 +28,7 @@ jobs:
         run: |
           rsync -a --delete \
             --exclude=".git" \
-            --exclude=".github/workflows/ge360-sync-upstream.yml" \
+            --exclude=".github/workflows/" \
             /tmp/firefly-upstream/ ./
 
       - name: Commit synchronized source
