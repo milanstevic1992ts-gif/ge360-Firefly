@@ -5,6 +5,8 @@ on:
   push:
     paths:
       - ".github/workflows/ge360-sync-upstream.yml"
+  issues:
+    types: [opened]
 
 permissions:
   contents: write
