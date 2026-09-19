@@ -1,0 +1,42 @@
+name: Sync Firefly III Upstream
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/ge360-sync-upstream.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GE360 Firefly
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clone official Firefly III
+        run: |
+          git clone --depth 1 https://github.com/firefly-iii/firefly-iii.git /tmp/firefly-upstream
+
+      - name: Mirror upstream into this repository
+        run: |
+          rsync -a --delete \
+            --exclude=".git" \
+            --exclude=".github/workflows/ge360-sync-upstream.yml" \
+            /tmp/firefly-upstream/ ./
+
+      - name: Commit synchronized source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Already synchronized."
+            exit 0
+          fi
+          git commit -m "chore: sync official Firefly III upstream"
+          git push origin HEAD:main
